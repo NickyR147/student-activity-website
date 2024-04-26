@@ -51,6 +51,12 @@ const TextbookSearch = () => {
           </div>
         </nav>
 
+        <div><center>
+        <li className="nav-link ">
+        <a href="localhost:5173">Click here visit the Online Bookstore</a>
+      </li>
+          </center></div>
+
         <div className="Textbooks">
           <div className="row">
             {data.length >= 1

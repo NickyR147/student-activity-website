@@ -22,6 +22,15 @@ mongoose
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+// const stripeConfig = require('./config');
+// const stripe = require('stripe')(stripeConfig.stripeSecretKey);
+
+// const ticketRoutes = require('./routes/ticketRoutes');
+// const cardRoutes = require('./routes/cardRoutes');
+
+// app.use('/tickets', ticketRoutes);
+// app.use('/cards', cardRoutes);
+
 // User Registration
 app.post("/register", async (req, res) => {
   try {
@@ -155,6 +164,23 @@ app.get("/getrooms", async (req, res) => {
       console.log(err);
       return res.send("Roommate finding server error");
     }
+});
+
+// Add route for making a payment
+app.post('/pay', async (req, res) => {
+  try {
+      const { amount, currency, source, description } = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount,
+          currency,
+          source,
+          description
+      });
+      res.json(paymentIntent);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while processing payment' });
+  }
 });
 
 app.post("/compregister", async (req, res) => {
