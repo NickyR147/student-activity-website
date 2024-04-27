@@ -1,9 +1,8 @@
-.first{
-    background-image: url("./bg.jpg");
-    width: 100vh;
-    height: 100vh;
-    background-repeat: repeat;
-    background-size: cover;
-    z-index: -2;
-    height: auto;
-    width: auto;}
+    body {
+        margin: 0;
+        padding: 0;
+        background-image: url('./bg.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }

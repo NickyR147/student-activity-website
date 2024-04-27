@@ -1,0 +1,62 @@
+<section class="py-2">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="display-3 mt-3 pt-5">Bus Ticket Purchase</h1>
+            <br/>
+            <p class="lead">Select your ticket options:</p>
+            <br/>
+            <form id="ticket-selection-form">
+                <label for="zone1">Zone 1 ($2)</label>
+                <input type="number" id="zone1" name="zone1" min="0" value="0" class="form-control mb-3">
+                
+                <label for="zone2">Zone 2 ($4)</label>
+                <input type="number" id="zone2" name="zone2" min="0" value="0" class="form-control mb-3">
+                
+                <label for="zone3">Zone 3 ($6)</label>
+                <input type="number" id="zone3" name="zone3" min="0" value="0" class="form-control mb-3">
+
+                <label for="bus-card">Bus Card ($40 each)</label>
+                <input type="number" id="bus-card" name="bus-card" min="0" value="0" class="form-control mb-3">
+                
+                <br/>
+                <button type="button" id="calculate-btn" class="btn btn-primary">Calculate Total</button>
+            </form>
+            <div id="payment-section" style="display: none;">
+                <br/>
+                <p id="payment-amount"></p>
+                <form action="/charge" method="POST">
+                    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="pk_test_51P9ej3K4pfrPfQYLphCQZTsx2YrLEQJHmFeviOfZ5U0APAGQoYyQ2Z6DfYGmm2dbjoVYsNmV4i25Pc0TFsjMc2gU00M1f3AmPm" 
+                        data-name="Bus Ticket Purchase"
+                        data-locale=""
+                        id="stripe-button"
+                    >
+                    </script>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('calculate-btn').addEventListener('click', function() {
+        var zone1Tickets = parseInt(document.getElementById('zone1').value);
+        var zone2Tickets = parseInt(document.getElementById('zone2').value);
+        var zone3Tickets = parseInt(document.getElementById('zone3').value);
+        var busCards = parseInt(document.getElementById('bus-card').value);
+        
+        var totalAmount = (zone1Tickets * 2) + (zone2Tickets * 4) + (zone3Tickets * 6) + (busCards * 40);
+        
+        if (totalAmount > 0) {
+            document.getElementById('payment-amount').innerText = 'Total Amount: $' + totalAmount.toFixed(2);
+            document.getElementById('payment-section').style.display = 'block';
+        } else {
+            document.getElementById('payment-section').style.display = 'none';
+        }
+    });
+
+    document.getElementById('go-back-btn').addEventListener('click', function() {
+        document.getElementById('payment-section').style.display = 'none';
+    });
+</script>
+

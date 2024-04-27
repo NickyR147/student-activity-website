@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
+import {
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+} from "@material-ui/core";
 import "./App.css";
 import Header from "./Header";
 import "./bgstatic.css";
 
-const myStyle = {
-  backgroundImage: 'url("/bg.jpg"})',
-  height: "100vh",
-  marginTop: "-70px",
-  fontSize: "50px",
-  backgroundSize: "cover",
-  backgroundRepeat: "no-repeat",
-};
-
 const RoommatePost = () => {
-  const [selectedFiles, setSelectedfiles] = useState([]);
   const [data, seData] = useState({
     name: "",
     contact: "",
@@ -28,11 +26,6 @@ const RoommatePost = () => {
 
   const changeHandler = (e) => {
     seData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const fileHandler = (e) => {
-    console.log(e.target.files);
-    setSelectedfiles(e.target.files);
   };
 
   const fileUpload = () => {
@@ -66,79 +59,67 @@ const RoommatePost = () => {
   return (
     <div className="back">
       <Header />
-      <div> </div>
       <center>
-        <section className="container">
-          <h1
-            className="large "
-            style={{ color: "#30332E", marginTop: "50px" }}
-          >
-            Post Ad for Roommates
-          </h1>
-          <br></br>
-          <form>
-            <input
-              style={{ width: "41%" }}
-              type="text"
-              placeholder="Your Name"
-              onChange={changeHandler}
-              value={name}
-              name="name"
-            />
-            <br />
-            <br />
-            <input
-              style={{ width: "41%" }}
-              type="text"
-              placeholder="Contact Information"
-              onChange={changeHandler}
-              value={contact}
-              name="contact"
-            />
-            <br />
-            <br />
-            <select
-              style={{ width: "41%" }}
-              onChange={changeHandler}
-              value={gender}
-              name="gender"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            <br />
-            <br />
-            <input
-              style={{ width: "41%" }}
-              type="date"
-              placeholder="Move in date"
-              onChange={changeHandler}
-              value={moveInDate}
-              name="moveInDate"
-            />
-            <br />
-            <br />
-            <input
-              style={{ width: "41%" }}
-              type="text"
-              placeholder="Price"
-              onChange={changeHandler}
-              value={priceRange}
-              name="priceRange"
-            />
-            <br />
-            <br />
-            <input
-              type="button"
-              className="btn btn-secondary"
-              value="Post"
-              onClick={fileUpload}
-            />
-          </form>
-        </section>
-        <br />
-        <br />
+        <Card style={{ maxWidth: 400, margin: "50px auto" }}>
+          <CardContent>
+            <h1 style={{ color: "#30332E" }}>Post Ad for Roommates</h1>
+            <form>
+              <TextField
+                style={{ marginBottom: 20 }}
+                fullWidth
+                label="Your Name"
+                onChange={changeHandler}
+                value={name}
+                name="name"
+              />
+              <TextField
+                style={{ marginBottom: 20 }}
+                fullWidth
+                label="Contact Information"
+                onChange={changeHandler}
+                value={contact}
+                name="contact"
+              />
+              <Select
+                style={{ marginBottom: 20 }}
+                fullWidth
+                label="Gender"
+                onChange={changeHandler}
+                value={gender}
+                name="gender"
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
+              <TextField
+                style={{ marginBottom: 20 }}
+                fullWidth
+                label="Move in date"
+                type="date"
+                onChange={changeHandler}
+                value={moveInDate}
+                name="moveInDate"
+              />
+              <TextField
+                style={{ marginBottom: 20 }}
+                fullWidth
+                label="Price"
+                onChange={changeHandler}
+                value={priceRange}
+                name="priceRange"
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={fileUpload}
+              >
+                Post
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </center>
     </div>
   );

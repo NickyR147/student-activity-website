@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, Navigate, NavLink } from "react-router-dom";
+import { Navigate, NavLink } from "react-router-dom";
 import axios from "axios";
+import { Card, CardContent, Button, TextField } from "@material-ui/core";
 import Header from "./Header";
 import "./bg.css";
 
@@ -9,23 +10,20 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [tokenn, setTokenn] = useState(localStorage.getItem("token"));
   const [y, setY] = useState("");
+
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/getcomp")
-      .then((res) =>
-        !search
-          ? setData(res.data)
-          : setData(
-              res.data.filter(
-                (profile) =>
-                  profile.compname.includes(search.toUpperCase()) |
-                  profile.email.toLowerCase().includes(search.toLowerCase()) |
-                  profile.eligibility
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-              )
+    axios.get("http://localhost:5000/getcomp").then((res) => {
+      !search
+        ? setData(res.data)
+        : setData(
+            res.data.filter(
+              (profile) =>
+                profile.compname.toLowerCase().includes(search.toLowerCase()) ||
+                profile.email.toLowerCase().includes(search.toLowerCase()) ||
+                profile.eligibility.toLowerCase().includes(search.toLowerCase())
             )
-      );
+          );
+    });
 
     axios
       .get("http://localhost:5000/getpresentuser", {
@@ -35,90 +33,82 @@ const Dashboard = () => {
       })
       .then((res) => setY(res.data._id));
   }, [search]);
+
   if (!localStorage.getItem("token")) {
     return <Navigate to="/login" />;
   }
-  console.log(tokenn);
 
   const searchHandler = (e) => {
     e.preventDefault();
-    console.log(search);
-    axios
-      .get("http://localhost:5000/getcomp")
-      .then((res) =>
-        !search
-          ? setData(res.data)
-          : setData(
-              res.data.filter(
-                (profile) =>
-                  profile.compname.includes(search.toUpperCase()) ||
-                  profile.email.toLowerCase().includes(search.toLowerCase()) ||
-                  profile.eligibility
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                  profile.description
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                  profile.lastdate
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                  profile.rounds.toString().includes(search)
-              )
+    // Clear existing matches
+    setData([]);
+    axios.get("http://localhost:5000/getcomp").then((res) => {
+      !search
+        ? setData(res.data)
+        : setData(
+            res.data.filter(
+              (profile) =>
+                profile.compname.toLowerCase().includes(search.toLowerCase()) ||
+                profile.email.toLowerCase().includes(search.toLowerCase()) ||
+                profile.eligibility
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                profile.description
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                profile.lastdate.toLowerCase().includes(search.toLowerCase()) ||
+                profile.rounds.toString().includes(search)
             )
-      );
+          );
+    });
   };
 
   return (
     <div className="first">
       <Header />
-
       <section className="container">
         <center>
-          {" "}
-          <h1
-            className="large "
-            style={{ color: "#30332E", marginTop: "20px" }}
-          >
+          <h1 className="large" style={{ color: "#30332E", marginTop: "20px" }}>
             Discover new events
           </h1>
         </center>
-
         <nav className="navbar navbar-light">
           <div className="container-fluid">
             <h3 className="navbar-brand">
               Explore and apply to events
               <span style={{ color: "blue" }}> </span>
             </h3>
-
-            {/* <form className="d-flex" onSubmit={searchHandler}>
-              <input
+            <form className="d-flex" onSubmit={searchHandler}>
+              <TextField
                 className="form-control me-2"
                 type="text"
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Enter to Search"
                 aria-label="Search"
               />
-              <input
+              <Button
                 className="btn btn-outline-success"
                 type="submit"
-                value="Search"
-              />
-            </form> */}
+                variant="contained"
+                color="primary"
+              >
+                Search
+              </Button>
+            </form>
           </div>
         </nav>
-
-        <div className="profiles ">
+        <div className="profiles">
           <div className="row">
-            {data.length >= 1
-              ? data.map((profile) => (
-                  <div className="col-md-4">
-                    <div
-                      className="profile bg-light card "
-                      style={{ margin: "10px", width: "25.5rem" }}
-                    >
+            {data.length >= 1 ? (
+              data.map((profile) => (
+                <div className="col-md-4">
+                  <Card
+                    className="profile bg-light card"
+                    style={{ margin: "10px", width: "25.5rem" }}
+                  >
+                    <CardContent>
                       <center>
                         <div>
-                          <br/>
                           <h2 style={{ color: "#6DAFED" }}>
                             {profile.compname}
                           </h2>
@@ -138,13 +128,15 @@ const Dashboard = () => {
                             <b>Other Information: </b>
                             {profile.rounds}
                           </p>
-                          <br />
                         </div>
                       </center>
-                    </div>
-                  </div>
-                ))
-              : null}
+                    </CardContent>
+                  </Card>
+                </div>
+              ))
+            ) : (
+              <p>No matching results found.</p>
+            )}
           </div>
         </div>
         <br />
@@ -152,20 +144,19 @@ const Dashboard = () => {
         <br />
         <br />
         <center>
-          <li className="nav-link ">
-            <NavLink
-              to="/addcompany"
-              className="nav-link"
-              style={{ color: "#00CCCC" }}
-            >
-              Click here if you want to add your own event.
-            </NavLink>
-          </li>
+          <Button
+            variant="contained"
+            color="primary"
+            component={NavLink}
+            to="/addcompany"
+            style={{ color: "#00CCCC" }}
+          >
+            Click here if you want to add your own event.
+          </Button>
         </center>
         <br />
         <br />
       </section>
-
       {tokenn === "undefined" && <Navigate to="/login" />}
     </div>
   );

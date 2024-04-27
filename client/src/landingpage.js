@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link, Navigate, NavLink } from "react-router-dom";
-import axios from "axios";
+import { Navigate, NavLink } from "react-router-dom";
 import Header from "./Header";
-import "./bgstatic.css";
-
-const myStyle = {
-  backgroundImage: 'url("/bg.jpg"})',
-  height: "100vh",
-  marginTop: "-70px",
-  fontSize: "50px",
-  backgroundSize: "cover",
-  backgroundRepeat: "no-repeat",
-};
+import { Button, Card, CardContent, CardMedia, Typography, Grid } from "@material-ui/core";
 
 const LandinPage = () => {
-  const [search, setSearch] = useState(null);
-  const [data, setData] = useState([]);
   const [tokenn, setTokenn] = useState(localStorage.getItem("token"));
-  const [y, setY] = useState("");
 
   if (!localStorage.getItem("token")) {
     return <Navigate to="/login" />;
   }
-  console.log(tokenn);
 
   return (
     <div className="first">
@@ -30,113 +16,118 @@ const LandinPage = () => {
 
       <section className="container">
         <center>
-          {" "}
-          <h1
-            className="large "
-            style={{ color: "#30332E", marginTop: "20px" }}
-          >
+          <h1 className="large" style={{ color: "#30332E", marginTop: "20px" }}>
             Welcome to Venture Hub
           </h1>
-          <centre>
-            <h3>A student acivity website made by students for students.</h3>
-          </centre>
-          <nav className="navbar navbar-light">
-            <div className="container-fluid">
-              <div>
-              <br />
-              <img
-                className="round-img"
-                src="https://www.svgrepo.com/show/5433/house.svg"
-                height="250"
-                width="450"
-                alt="pix"
-              />
-              <br />
-              <br />
-              <p>To browse for roommates</p>
-              <br />
-              <button className="nav-link ">
-                <NavLink
-                  to="/roommatesearch"
-                  className="nav-link"
-                  style={{ color: "#000000" }}
-                >
-                  Click here!
-                </NavLink>
-              </button>
-              <br />
-              </div>
-              <div>
-                <br />
-                <img
-                  className="round-img"
-                  src="https://cdni.iconscout.com/illustration/premium/thumb/events-4352689-3611150.png?f=webp"
-                  height="250"
-                  width="450"
-                  alt="pix"
-                />
-                <br />
-                <p>To browse events</p>
-                <br />
-                <button className="nav-link ">
-                  <NavLink
-                    to="/eventsearch"
-                    className="nav-link"
-                    style={{ color: "#000000" }}
-                  >
+          <h3>A student activity website made by students for students.</h3>
+          <br/>
+          <br/>
+          <Grid container spacing={3} justify="center">
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="roommate-search"
+                    height="250"
+                    image="https://www.svgrepo.com/show/5433/house.svg"
+                    title="Roommate Search"
+                  />
+                  <Typography variant="body1" color="textPrimary">To browse for roommates</Typography>
+                  <Button component={NavLink} to="/roommatesearch" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
                     Click here!
-                  </NavLink>
-                </button>
-              </div>
-              <div>
-                <br />
-                <img
-                  className="round-img"
-                  src="https://www.svgrepo.com/show/94674/books-stack-of-three.svg"
-                  height="250"
-                  width="450"
-                  alt="pix"
-                />
-                <br />
-                <p>Search or buy textbooks</p>
-                <br />
-                <button className="nav-link ">
-                  <NavLink
-                    to="/textbooksearch"
-                    className="nav-link"
-                    style={{ color: "#000000" }}
-                  >
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="events"
+                    height="250"
+                    image="https://cdni.iconscout.com/illustration/premium/thumb/events-4352689-3611150.png?f=webp"
+                    title="Events"
+                  />
+                  <Typography variant="body1" color="textPrimary">To browse events</Typography>
+                  <Button component={NavLink} to="/eventsearch" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
                     Click here!
-                  </NavLink>
-                </button>
-              </div>
-              <div>
-                <br />
-                <img
-                  className="round-img"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bus.svg/2560px-Bus.svg.png"
-                  height="250"
-                  width="450"
-                  alt="pix"
-                />
-                <br />
-                <p>Buy bus tickets</p>
-                <br />
-                <button className="nav-link ">
-                  <NavLink
-                    to="/"
-                    className="nav-link"
-                    style={{ color: "#000000" }}
-                  >
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="textbooks"
+                    height="250"
+                    image="https://www.svgrepo.com/show/94674/books-stack-of-three.svg"
+                    title="Textbooks"
+                  />
+                  <Typography variant="body1" color="textPrimary">Search or buy textbooks</Typography>
+                  <Button component={NavLink} to="/textbooksearch" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
                     Click here!
-                  </NavLink>
-                </button>
-              </div>
-            </div>
-          </nav>
-          <br />
-          <br />
-          <br />
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="bus-tickets"
+                    height="250"
+                    image="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bus.svg/2560px-Bus.svg.png"
+                    title="Bus Tickets"
+                  />
+                  <Typography variant="body1" color="textPrimary">Buy bus tickets</Typography>
+                  <Button component={NavLink} to="localhost:8888" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
+                    Click here!
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="meal-plan"
+                    height="250"
+                    image="https://b.kisscc0.com/20180818/cie/kisscc0-meal-food-computer-icons-healthy-diet-plate-meal-plate-5b77a2727ae6b4.4534947215345670265034.png"
+                    title="Meal Plan"
+                  />
+                  <Typography variant="body1" color="textPrimary">Buy a meal plan</Typography>
+                  <Button component={NavLink} to="localhost:7777" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
+                    Click here!
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Card>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    alt="elections"
+                    height="250"
+                    image="https://www.svgrepo.com/show/221188/elections-poll.svg"
+                    title="Elections"
+                  />
+                  <Typography variant="body1" color="textPrimary">Elections! Vote Now!</Typography>
+                  <Button component={NavLink} to="/voting" style={{ backgroundColor: "#000000", color: "#FFFFFF" }}>
+                    Click here!
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+          <br/>
+          <br/>
         </center>
       </section>
 

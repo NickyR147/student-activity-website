@@ -1,0 +1,45 @@
+<section class="py-2">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="display-3 mt-3 pt-5">Student meal plan purchase</h1>
+            <br/>
+            <p class="lead">Select your meal plan duration:</p>
+            <br/>
+            <form id="plan-selection-form">
+                <select id="plan-duration" class="form-select mb-3">
+                    <option value="monthly">Monthly</option>
+                    <option value="semester">Semester</option>
+                </select>
+                <br/>
+                <button type="button" id="confirm-btn" class="btn btn-primary">Confirm</button>
+            </form>
+            <div id="payment-section" style="display: none;">
+                <br/>
+                <p id="payment-amount"></p>
+                <form action="/charge" method="POST">
+                    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="pk_test_51P9ej3K4pfrPfQYLphCQZTsx2YrLEQJHmFeviOfZ5U0APAGQoYyQ2Z6DfYGmm2dbjoVYsNmV4i25Pc0TFsjMc2gU00M1f3AmPm" 
+                        data-name="Meal Plan Purchase"
+                        data-locale=""
+                        id="stripe-button"
+                    >
+                    </script>
+                </form>
+                {{!-- <button type="button" id="go-back-btn" class="btn btn-secondary mt-3">Go Back</button> --}}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('confirm-btn').addEventListener('click', function() {
+        var planDuration = document.getElementById('plan-duration').value;
+        var paymentAmount = planDuration === 'monthly' ? '$600 for one month' : '$2850 for the full semester with 5% discount';
+        document.getElementById('payment-amount').innerText = 'Purchase for ' + paymentAmount;
+        document.getElementById('payment-section').style.display = 'block';
+    });
+
+    document.getElementById('go-back-btn').addEventListener('click', function() {
+        document.getElementById('payment-section').style.display = 'none';
+    });
+</script>

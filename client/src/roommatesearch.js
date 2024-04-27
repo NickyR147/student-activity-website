@@ -2,9 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Link, Navigate, NavLink } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
+import { Container, Typography, TextField, Button, Card, CardContent, Grid, makeStyles } from "@material-ui/core";
 import "./bg.css";
 
+const useStyles = makeStyles((theme) => ({
+  filters: {
+    margin: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    margin: theme.spacing(2),
+    width: 300,
+  },
+  button: {
+    color: "#00CCCC",
+    textDecoration: "none",
+  },
+}));
+
 const RoommateSearch = () => {
+  const classes = useStyles();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [tokenn, setTokenn] = useState(localStorage.getItem("token"));
@@ -69,109 +88,76 @@ const RoommateSearch = () => {
     <div className="first">
       <Header />
 
-      <section className="container">
-        <center>
-          <h1 className="large" style={{ color: "#30332E", marginTop: "20px" }}>
-            Roommate Search
-          </h1>
-        </center>
+      <Container>
+        <Typography variant="h1" align="center" style={{ color: "#30332E", marginTop: "20px" }}>
+          Roommate Search
+        </Typography>
 
-        <nav className="navbar navbar-light">
-          <div className="container-fluid">
-            <h3 className="navbar-brand">
-              Search for Rooms and Roommates
-              <span style={{ color: "blue" }}> </span>
-            </h3>
-          </div>
-        </nav>
-
-        <div className="filters">
-          <label>
-            Move-in Date:
-            <input
-              type="date"
-              name="moveInDate"
-              value={filterCriteria.moveInDate}
-              onChange={handleFilterChange}
-            />
-          </label>
-          <label>
-            Gender:
-            <select
-              style={{ width: "41%" }}
-              onChange={handleFilterChange}
-              value={filterCriteria.gender}
-              name="gender"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </label>
-          <label>
-            Price Range:
-            <input
-              type="text"
-              name="priceRange"
-              value={filterCriteria.priceRange}
-              onChange={handleFilterChange}
-            />
-          </label>
-          <button onClick={searchHandler}>Apply Filters</button>
+        <div className={classes.filters}>
+          <TextField
+            label="Move-in Date"
+            type="date"
+            name="moveInDate"
+            value={filterCriteria.moveInDate}
+            onChange={handleFilterChange}
+          />
+          <TextField
+            select
+            label="Gender"
+            style={{ width: "150px", marginLeft: "10px" }}
+            onChange={handleFilterChange}
+            value={filterCriteria.gender}
+            name="gender"
+          >
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </TextField>
+          <TextField
+            label="Price Range"
+            type="text"
+            name="priceRange"
+            value={filterCriteria.priceRange}
+            onChange={handleFilterChange}
+            style={{ marginLeft: "10px" }}
+          />
+          <Button variant="contained" color="primary" onClick={searchHandler} style={{ marginLeft: "10px" }}>
+            Apply Filters
+          </Button>
         </div>
 
-        <div className="Roommates">
-          <div className="row">
-            {data.length >= 1
-              ? data.map((rooms) => (
-                  <div className="col-md-4">
-                    <div
-                      className="Roommates bg-light card"
-                      style={{ margin: "10px", width: "25.5rem" }}
-                    >
-                      <center>
-                        <br />
-                        <div>
-                          <h2 style={{ color: "#6DAFED" }}>
-                            Posted by: {rooms.name}
-                          </h2>
-                          <br />
-                          <h6>Contact: {rooms.contact}</h6>
-                          <br />
-                          <h6>Gender: {rooms.gender}</h6>
-                          <br />
-                          <h6>Move in Date: {rooms.moveInDate}</h6>
-                          <br />
-                          <h6>Price: {rooms.priceRange}</h6>
-                          <br />
-                        </div>
-                      </center>
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
-        </div>
-        <br />
-        <br />
-        <br />
-        <br />
+        <Grid container spacing={2}>
+          {data.map((rooms) => (
+            <Grid item xs={12} sm={6} md={4} key={rooms.id}>
+              <Card className={classes.card}>
+                <CardContent>
+                  <Typography variant="h5" component="h2" style={{ color: "#6DAFED" }}>
+                    Posted by: {rooms.name}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    Contact: {rooms.contact}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    Gender: {rooms.gender}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    Move in Date: {rooms.moveInDate}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    Price: {rooms.priceRange}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
         <center>
-          <li className="nav-link ">
-            <NavLink
-              to="/roommatepost"
-              className="nav-link"
-              style={{ color: "#00CCCC" }}
-            >
-              Click here if you want to post an about your room.
-            </NavLink>
-          </li>
+          <Button component={NavLink} to="/roommatepost" color="primary" className={classes.button}>
+            Click here if you want to post an about your room.
+          </Button>
         </center>
-        <br />
-        <br />
-        <br />
-        <br />
-      </section>
+      </Container>
 
       {tokenn === "undefined" && <Navigate to="/login" />}
     </div>

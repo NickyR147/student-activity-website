@@ -11,6 +11,9 @@ const Textbook = require("./textbookmodel");
 const Event = require("./eventmodel");
 const appliedcomps = require("./appliedcomps");
 const Poll = require("./pollmodel");
+const passwordResetRoutes = require("./forgotpassword");
+const expressJwt = require('express-jwt');
+const nodemailer = require('nodemailer');
 
 // const { default: Login } = require('./client/src/Login');
 
@@ -21,15 +24,7 @@ mongoose
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
-
-// const stripeConfig = require('./config');
-// const stripe = require('stripe')(stripeConfig.stripeSecretKey);
-
-// const ticketRoutes = require('./routes/ticketRoutes');
-// const cardRoutes = require('./routes/cardRoutes');
-
-// app.use('/tickets', ticketRoutes);
-// app.use('/cards', cardRoutes);
+const JWT_SECRET = process.env.JWT_SECRET || 'yf93a3b5113a9869cb864a8d07bb6b981a75ce1a0cae62ce793edd41c1d6f8e9a';
 
 // User Registration
 app.post("/register", async (req, res) => {
@@ -42,22 +37,28 @@ app.post("/register", async (req, res) => {
       state,
       zipCode,
       email,
+      department,
+      phoneNumber,
       loginName,
       password,
       confirmPassword,
     } = req.body;
-    const exist = await users.findOne({ email });
-    if (exist) {
+
+    const existEmail = await users.findOne({ email });
+    if (existEmail) {
       return res.status(200).send("This email has already been registered");
     }
-    const existId = await users.findOne({ loginName });
-    if (existId) {
+
+    const existLoginName = await users.findOne({ loginName });
+    if (existLoginName) {
       return res.status(200).send("This username has been taken.");
     }
+
     if (password !== confirmPassword) {
-      return res.status(400).send("Invalid Password");
+      return res.status(400).send("Passwords do not match");
     }
-    let newUser = new users({
+
+    const newUser = new users({
       firstName,
       lastName,
       address,
@@ -65,11 +66,14 @@ app.post("/register", async (req, res) => {
       state,
       zipCode,
       email,
+      department,
+      phoneNumber,
       loginName,
       password,
       confirmPassword,
     });
-    newUser.save();
+
+    await newUser.save();
     return res.status(200).send("Registration successful");
   } catch (err) {
     console.log(err);
@@ -103,6 +107,18 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Search users
+app.get("/search", async (req, res) => {
+  try {
+    const searchCriteria = req.query; // Get the search criteria from query parameters
+    const foundUsers = await users.searchUsers(searchCriteria); // Call the searchUsers method from the user model
+    return res.status(200).json(foundUsers);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
+  }
+});
+
 // Edit User Profile
 app.post("/editprofile", async (req, res) => {
   try {
@@ -116,6 +132,8 @@ app.post("/editprofile", async (req, res) => {
       loginName,
       password,
       confirmPassword,
+      department,
+      phoneNumber,
     } = req.body;
 
     // Find the user by loginName
@@ -134,6 +152,8 @@ app.post("/editprofile", async (req, res) => {
     student.zipCode = zipCode;
     student.password = password;
     student.confirmPassword = confirmPassword;
+    student.department = department;
+    student.phoneNumber = phoneNumber;
 
     await student.save(); // Save the updated user
 
@@ -183,6 +203,70 @@ app.post('/pay', async (req, res) => {
   }
 });
 
+// Define vote schema
+const voteSchema = new mongoose.Schema({
+  candidate: String,
+});
+
+const Vote = mongoose.model('Vote', voteSchema);
+
+// Route for voting
+app.post('/vote', async (req, res) => {
+  try {
+    const { candidate } = req.body;
+    const newVote = new Vote({ candidate });
+    await newVote.save();
+    res.status(201).json({ message: 'Vote recorded successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.post('/sendLoginCredentials', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const exist = await users.findOne({ email });
+    if (!exist) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Send email with login credentials
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'maramreddynikhil14@gmail.com', // Enter your Gmail address
+        pass: 'rxyzotbzdbpynjdh' // Enter your Gmail password
+      }
+    });
+
+    let info = await transporter.sendMail({
+      from: 'your@gmail.com', // Enter your Gmail address
+      to: email,
+      subject: 'Your Login Credentials',
+      text: `Your login name: ${exist.loginName}\nYour password: ${exist.password}, we recommend you to change your password at edit profile.`,
+    });
+
+    console.log('Email sent:', info.response);
+    return res.status(200).json({ message: 'Login credentials sent to your email' });
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/results', async (req, res) => {
+  try {
+    const votes = await Vote.aggregate([
+      { $group: { _id: '$candidate', count: { $sum: 1 } } },
+    ]);
+    res.status(200).json(votes);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 app.post("/compregister", async (req, res) => {
   try {
     const { compname, email, description, lastdate, rounds, compPic } =
@@ -215,16 +299,16 @@ app.post("/compregister", async (req, res) => {
   }
 });
 
-app.get("/getpresentuser", middleware, async (req, res) => {
-  try {
-    const userid = req.email;
-    const exist = await users.findById(email);
-    return res.status(200).json(exist);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send("getpresentuser Server Error");
-  }
-});
+// app.get("/getpresentuser", middleware, async (req, res) => {
+//   try {
+//     const userid = req.loginName;
+//     const exist = await users.findById(loginName);
+//     return res.status(200).json(exist);
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).send("getpresentuser Server Error");
+//   }
+// });
 
 app.get("/getcomp", async (req, res) => {
   try {
